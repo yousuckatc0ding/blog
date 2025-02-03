@@ -1,0 +1,47 @@
+
+
+
+@import "tailwindcss";
+
+@font-face {
+    font-family: 'Fira Code';
+    src: url('/static/fonts/firacode/static/FiraCode-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+/*font-face {  font-family: Oswald;  font-style: normal;  font-weight: 200 700;  font-display: swap;  src: url("/fonts/Oswald.woff2") format("woff2");}*/
+
+html{
+	font-family: "Fira Code";
+}
+
+body{
+	font-family: "Fira Code";
+	background-color: #16161E;
+	color: #F5C0C0;
+}
+
+p{
+	margin: 2rem 0;
+}
+
+#navbar{
+	height: 100px;
+	width: 100%;
+	/*background-color: #F5C0C0;*/
+	/*color: #16161E;*/
+
+	background-color: #16161E;
+}
+
+#main-content{
+	background-color: #16161E;
+}
+
+
+h1{
+	color: #FDF3F3;
+}
+
+
+
