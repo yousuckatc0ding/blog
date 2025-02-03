@@ -6,7 +6,6 @@ import markdown
 from pathlib import Path
 
 app = FastAPI()
-print()
 
 # Mount static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
