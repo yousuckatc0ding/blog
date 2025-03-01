@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="pt-12">
+    {% for post in posts %}
+        <!--<li><a href="{{ post.href }}">{{ post.caption }}</a></li>-->
+        <!--<li>{{post.title}} </li>-->
+        <div class="pt-4 pb-2 px-6 border-b">
+            {{ post.metadata.title[0] }}
+            <br>
+            {{ post.metadata.date[0] }}
+            {{ post.excerpt | safe }}
+            <a class="text-white hover:text-gray-500" href = blog/{{post.path}}> Read more >></a>
+        </div>
+    {% endfor %}
+    </div>
+
+
+{% endblock %}
