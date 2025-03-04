@@ -16,8 +16,8 @@ from concurrent.futures import ThreadPoolExecutor
 # Constants
 BLOGS_DIR = Path("blog")
 IGNORED_FILES = ["about.md"]
-CACHE_DURATION = 43200  # 12 hours in seconds
-MAX_WORKERS = 4  # Adjust based on your CPU cores
+CACHE_DURATION = 60 * 60 * 5
+MAX_WORKERS = 2
 
 # Initialize FastAPI
 app = FastAPI()
