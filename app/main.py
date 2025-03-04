@@ -55,22 +55,19 @@ def get_blog_content(file_name: str):
 @app.get("/", response_class=HTMLResponse)
 @cached(cache=cache)
 def blog_list(request: Request):
-    if not cache:
-        content = []
-        for file_path in listdir(BLOGS_DIR):
-            if path.isfile(path.join(BLOGS_DIR, file_path)):
-                if file_path not in ignored_files:
-                    content.append(get_blog_content(file_path))
+    content = []
+    for file_path in listdir(BLOGS_DIR):
+        if path.isfile(path.join(BLOGS_DIR, file_path)):
+            if file_path not in ignored_files:
+                content.append(get_blog_content(file_path))
 
-        return templates.TemplateResponse(
-            "blog.html",
-            {
-                "request": request,
-                "posts": content,
-            },
-        )
-    else:
-        return cache["homepage"]
+    return templates.TemplateResponse(
+        "blog.html",
+        {
+            "request": request,
+            "posts": content,
+        },
+    )
 
 
 @app.get("/blog/{filename}", response_class=HTMLResponse)
