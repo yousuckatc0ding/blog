@@ -1,23 +1,29 @@
+import markdown
+import re
+from cachetools import TTLCache, cached
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-import markdown
+from fastapi.middleware.gzip import GZipMiddleware
 from pathlib import Path
 from os import listdir, path
-import re
-
+from datetime import datetime, timedelta
 ignored_files = ["about.md"]
 
 app = FastAPI()
 
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
+
+cache = TTLCache(maxsize=10, ttl=timedelta(hours=12), timer=datetime.now)
+
 
 # Path to the blogs directory
 BLOGS_DIR = Path("blog")
 
-
+@cached(cache=cache)
 def get_blog_content(file_name: str):
     file_path = BLOGS_DIR / file_name
     try:
@@ -46,39 +52,29 @@ def get_blog_content(file_name: str):
 
 
 @app.get("/blog", response_class=HTMLResponse)
-def blog_list(request: Request):
-    content = []
-    for file_path in listdir(BLOGS_DIR):
-        if path.isfile(path.join(BLOGS_DIR, file_path)):
-            if file_path not in ignored_files:
-                content.append(get_blog_content(file_path))
-
-    return templates.TemplateResponse(
-        "blog.html",
-        {
-            "request": request,
-            "posts": content,
-        },
-    )
-
 @app.get("/", response_class=HTMLResponse)
+@cached(cache=cache)
 def blog_list(request: Request):
-    content = []
-    for file_path in listdir(BLOGS_DIR):
-        if path.isfile(path.join(BLOGS_DIR, file_path)):
-            if file_path not in ignored_files:
-                content.append(get_blog_content(file_path))
+    if not cache:
+        content = []
+        for file_path in listdir(BLOGS_DIR):
+            if path.isfile(path.join(BLOGS_DIR, file_path)):
+                if file_path not in ignored_files:
+                    content.append(get_blog_content(file_path))
 
-    return templates.TemplateResponse(
-        "blog.html",
-        {
-            "request": request,
-            "posts": content,
-        },
-    )
+        return templates.TemplateResponse(
+            "blog.html",
+            {
+                "request": request,
+                "posts": content,
+            },
+        )
+    else:
+        return cache["homepage"]
 
 
 @app.get("/blog/{filename}", response_class=HTMLResponse)
+@cached(cache=cache)
 def get_blog(request: Request, filename: str):
     try:
         filename = filename + ".md"
@@ -111,6 +107,7 @@ def get_blog(request: Request, filename: str):
 
 
 @app.get("/about", response_class=HTMLResponse)
+@cached(cache=cache)
 async def about_page(request: Request):
     markdown_file = BLOGS_DIR / "about.md"
     if markdown_file.exists():
