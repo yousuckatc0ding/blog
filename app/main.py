@@ -5,7 +5,6 @@ from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi.middleware.gzip import GZipMiddleware
 from pathlib import Path
 from os import listdir, path
 import time
@@ -16,12 +15,11 @@ from concurrent.futures import ThreadPoolExecutor
 # Constants
 BLOGS_DIR = Path("blog")
 IGNORED_FILES = ["about.md"]
-CACHE_DURATION = 60 * 60 * 5
+CACHE_DURATION = 60 * 60 * 5 # 5 hours cache
 MAX_WORKERS = 2
 
 # Initialize FastAPI
 app = FastAPI()
-app.add_middleware(GZipMiddleware, minimum_size=500)
 app.mount("/static", StaticFiles(directory="static", check_dir=True), name="static")
 templates = Jinja2Templates(directory="templates")
 
